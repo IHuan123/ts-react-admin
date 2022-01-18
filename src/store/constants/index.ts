@@ -22,3 +22,10 @@ export type SET_SELECT_MENU_TYPE = typeof SET_SELECT_MENU
 
 export const SET_BREADCRUMB:string = "SET_BREADCRUMB"  //设置面包屑
 export type SET_BREADCRUMB_TYPE = typeof SET_BREADCRUMB
+
+//图标
+export const ICON_DATA:string = "ICON_DATA"
+export type ICON_DATA_TYPE= typeof ICON_DATA
+
+export const SET_ICON_DATA:string = "SET_ICON_DATA"
+export type SET_ICON_DATA_TYPE= typeof SET_ICON_DATA

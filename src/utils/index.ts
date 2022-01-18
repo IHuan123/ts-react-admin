@@ -21,7 +21,6 @@ export function reduceMenuList(list:Menus[], path = ""):Menus[] {
         let children = item.children || null;
         item.parentPath = path;
         if (children) {
-            // @ts-ignore
             const child = reduceMenuList(children, path + item.path)
             data.push(...child)
         }
@@ -50,8 +49,8 @@ export function getMenuParentKey(list:Menus, key:string, val:any) {
                     let info:Menus = children[i]
                     info.parent = item;
                     if (info[key] === val){
-                        // @ts-ignore
-                        return (function find(c) {
+
+                        return (function find(c):any {
                             res.unshift({icon:c.icon,title:c.title,key:c.key})
                             if (c.parent) return find(c.parent);
                             return res

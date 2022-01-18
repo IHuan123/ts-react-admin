@@ -55,7 +55,7 @@ class Intercept extends Component<any,any> {
     }
 
     render() {
-        const {components: Components, menuList, routes, key, path, to, ...itemProps} = this.props;
+        const {components: Components, menuList, key, path, to, ...itemProps} = this.props;
         if (to) {
             return (
                 <Redirect key={key} exact={true} to={to}/>

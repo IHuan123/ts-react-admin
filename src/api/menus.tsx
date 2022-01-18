@@ -14,3 +14,11 @@ export function getAllMenu(){
         method:"GET",
     })
 }
+//更新菜单
+export function updateMenu(data:any){
+    return request({
+        url:"/api/system/updateMenu",
+        method:"PUT",
+        data
+    })
+}

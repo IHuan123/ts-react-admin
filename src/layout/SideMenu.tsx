@@ -11,7 +11,7 @@ const { Sider } = Layout;
 
 
 //菜单子选项渲染处理
-const renderMenu:React.FC<any> = (item:Menus, path:string = ""):any=>{
+const renderMenu:React.FC<any> = (item:Menus, path:string = "")=>{
     if(!item.visible) return null;
     if (!item.children) return <Menu.Item key={item.key} icon={ <Icon type={item.icon} style={{fontSize:"20px"}}/> }>
         <Link to={(path || "") + item.path}>{item.title}</Link>
@@ -76,11 +76,6 @@ class SideMenu extends Component<any,any>{
                 </Menu>
             </Sider>
         )
-    }
-    toPage = (item:Menus) => {
-        if (item.path) {
-            this.props.push(item.path)
-        }
     }
     onOpenChange = (keys:string[]) => {
         this.props.setOpenMenus(keys)

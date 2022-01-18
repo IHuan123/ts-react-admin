@@ -1,32 +1,64 @@
 const dynamicRoutesMap = [
 
+    // {
+    //     path: '/system/user',
+    //     component: () => import("@/views/system/User/User"),
+    // },
+    //
+    // {
+    //     path: '/system/roles',
+    //     component: () => import("@/views/system/Roles/Roles"),
+    // },
+    //
+    // {
+    //     path: '/system/menu',
+    //     component: () => import("@/views/system/Menu/Menu"),
+    // },
+    //
+    // {
+    //     path: '/dashboard',
+    //     component: function () {
+    //         return import("@/views/Dashboard/Dashboard")
+    //     },
+    // },
+    // {
+    //     path: '/user',
+    //     component: function () {
+    //         return import("@/views/User/User")
+    //     },
+    // },
+
     {
-        path: '/system/user',
+        // path: '/user',
+        key:"system-user",
         component: () => import("@/views/system/User/User"),
     },
 
     {
-        path: '/system/roles',
+        // path: '/roles',
+        key:"system-roles",
         component: () => import("@/views/system/Roles/Roles"),
     },
 
     {
-        path: '/system/menu',
+        // path: '/menu',
+        key:"system-menu",
         component: () => import("@/views/system/Menu/Menu"),
     },
 
     {
-        path: '/dashboard',
+        // path: '/dashboard',
+        key:"dashboard",
         component: function () {
             return import("@/views/Dashboard/Dashboard")
         },
     },
     {
-        path: '/user',
+        // path: '/user',
+        key:"userCenter",
         component: function () {
             return import("@/views/User/User")
         },
     },
-
 ]
 export default dynamicRoutesMap

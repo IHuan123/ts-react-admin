@@ -7,7 +7,7 @@ const MyIcon = createFromIconfontCN({
 
 function Icon({ type, ...itemProps }:any) {
     if (!type) return null;
-    return <MyIcon type={type} {...itemProps} />;
+    return <MyIcon type={'icon-' + type} {...itemProps} />;
 }
 
 // Icon.propTypes = {

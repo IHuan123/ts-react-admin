@@ -1,24 +1,29 @@
-import React, {useEffect, useState} from "react";
-import {Table, Button, Modal, Form, Input, Row, Popconfirm} from 'antd';
+import React, {useEffect, useState, useRef} from "react";
+import {Table, Modal, Form, Input, Select, Radio} from 'antd';
 import {connect} from "react-redux";
 import Icon from "@/components/Icon/Icon";
-import {getAllMenu} from "@/api/menus";
+import {getAllMenu,updateMenu} from "@/api/menus";
 import Action from "@/views/system/Menu/Action";
+import {Iconer} from "@/store/actions/icon";
+import { Menuer} from "./MyTable"
 
 const {Column} = Table;
-
+const {Option} = Select;
 const mapStateToProps = (state: any) => ({
-    menus: state.menus.menuList
+    icons: state.icon.icon
 })
 
-function Menu() {
-    const [loading, setLoading] = useState(true)
-    const [data, setData] = useState([])
-    const [checkStrictly] = useState(false);
-    const [isModalVisible, setModalVisible] = useState(false)
-    const [form,setForm] = useState({
-        title: ""
-    })
+
+
+
+
+function Menu({icons}: { icons: Iconer[] }) {
+    const [loading, setLoading] = useState<boolean>(false)
+    const [data, setData] = useState<Menuer[]>([])
+    const [checkStrictly] = useState<boolean>(false);
+    const [isModalVisible, setModalVisible] = useState<boolean>(false)
+    const [currentForm, setCurrentForm] = useState<any>(null)
+    const [refresh,setRefresh] = useState<number>(0)
     const rowSelection = {
         onChange: (selectedRowKeys: any, selectedRows: any) => {
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -30,21 +35,33 @@ function Menu() {
             console.log(selected, selectedRows, changeRows);
         },
     };
-    const handleSubmit = () => {
-        handleModel(true)
-    }
-    const handleCancel = () => {
-        handleModel(false)
-    }
+    const formEl: any = useRef(null)
     const handleModel: (visible: boolean) => void = (visible: boolean): void => {
         setModalVisible(visible)
     }
-    const edit = (info: any) => {
-        setForm(info)
+    const edit = (info: Menuer) => {
         handleModel(true)
+        setCurrentForm(info)
+        setTimeout(() => {
+            formEl.current.setFieldsValue(info)
+        }, 0)
+    }
+    const refreshPage=()=>{
+        let count = refresh+1
+        setRefresh(count)
+    }
+    //更新数据
+    const upMenu = (data:any)=>{
+        updateMenu(data).then((res:any)=>{
+            if(res.code===200){
+                refreshPage()
+            }
+        })
     }
     useEffect(() => {
+        console.log('渲染')
         let ignore = false;
+        setLoading(true)
         getAllMenu().then(res => {
             if (!ignore) {
                 setData(res.data)
@@ -54,66 +71,105 @@ function Menu() {
         return function () {
             ignore = true;
         }
-    }, [])
+    }, [refresh])
+    // 提交表单
+    const submit = () => {
+        formEl.current.validateFields().then((values:any) => {
+            let form = Object.assign({},currentForm,values)
+            upMenu(form)
+            handleModel(false)
+        });
+    };
+    const onCancel = () => {
+        formEl.current.resetFields();
+        handleModel(false)
+    };
     return (
         <>
             {/*编辑框*/}
-            <Modal width={"550px"} title="Basic Modal" visible={isModalVisible} onOk={ handleSubmit }
-                   onCancel={handleCancel}>
+            <Modal  width={"550px"} title="Basic Modal" visible={isModalVisible} onOk={submit} onCancel={onCancel}>
                 <Form
                     name="basic"
                     labelCol={{span: 5}}
                     wrapperCol={{span: 18}}
-                    initialValues={ form }
+                    initialValues={currentForm}
                     autoComplete="off"
                     labelAlign="left"
+                    ref={formEl}
                 >
                     <Form.Item
                         label="菜单标题"
                         name="title"
-                        rules={[{required: true, message: 'Please input your username!'}]}
+                        rules={[{required: true, message: 'Please input your title!'}]}
                     >
                         <Input/>
                     </Form.Item>
                     <Form.Item
                         label="菜单路径"
                         name="path"
-                        rules={[{required: true, message: 'Please input your password!'}]}
+                        rules={[{required: true, message: 'Please input your path!'}]}
                     >
                         <Input/>
                     </Form.Item>
                     <Form.Item
                         label="菜单key"
                         name="key"
-                        rules={[{required: true, message: 'Please input your password!'}]}
+                        rules={[{required: true, message: 'Please input your key!'}]}
                     >
                         <Input/>
                     </Form.Item>
                     <Form.Item
                         label="父级菜单"
                         name="parent_key"
-                        rules={[{required: true, message: 'Please input your password!'}]}
+                        rules={[{required: false, message: 'Please input your parent_key!'}]}
                     >
-                        <Input/>
+                        <Select disabled={!!currentForm && currentForm.parent_key === ""}
+                                placeholder="Please select a country">
+                            {data.map((item: any) => (
+                                <Option value={item.key} key={'select' + item.menu_id}>{item.title}</Option>))}
+                        </Select>
                     </Form.Item>
                     <Form.Item
                         label="菜单图标"
                         name="icon"
-                        rules={[{required: true, message: 'Please input your password!'}]}
+                        rules={[{required: true, message: 'Please input your icon!'}]}
                     >
-                        <Input/>
+                        <Select allowClear={true}
+                                showSearch={true}
+                                placeholder="Please select a country">
+                            {icons.map((item: Iconer) => (
+                                <Option value={item.font_class} key={item.unicode_decimal}>
+                                    <div style={{display: "flex",alignItems:"center"}}>
+                                        <Icon type={item.font_class} style={{fontSize: "20px"}}/><span
+                                        style={{marginLeft: "3px"}}>{item.font_class}</span>
+                                    </div>
+                                </Option>))}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        label="显示在菜单"
+                        name="visible"
+                        rules={[{required: true, message: 'Please input your icon!'}]}
+                    >
+                        <Radio.Group>
+                            <Radio value={0}>不显示</Radio>
+                            <Radio value={1}>显示</Radio>
+                        </Radio.Group>
                     </Form.Item>
                     <Form.Item
                         label="是否缓存"
                         name="keep_alive"
-                        rules={[{required: true, message: 'Please input your password!'}]}
+                        rules={[{required: true, message: 'Please input your keep_alive!'}]}
                     >
-                        <Input/>
+                        <Radio.Group>
+                            <Radio value={0}>不缓存</Radio>
+                            <Radio value={1}>缓存</Radio>
+                        </Radio.Group>
                     </Form.Item>
                     <Form.Item
                         label="菜单排序"
                         name="weight"
-                        rules={[{required: true, message: 'Please input your password!'}]}
+                        rules={[{required: true, message: 'Please input your weight!'}]}
                     >
                         <Input/>
                     </Form.Item>
@@ -135,22 +191,23 @@ function Menu() {
                 <Column align={"center"} title={"父级菜单"} key={"menu_id"} dataIndex={"parent_name"}/>
                 <Column align={"center"} title={"父级菜单key"} key={"menu_id"} dataIndex={"parent_key"}/>
                 <Column align={"center"} title={"是否显示"} key={"menu_id"} dataIndex={"visible"}
-                        render={col => (<span style={{fontSize: "14px"}}>{col ? "显示" : "隐藏"}</span>)}
+                        render={col => (<span style={{fontSize: "14px"}}>{col === 1 ? "显示" : "隐藏"}</span>)}
                 />
-                <Column align={"center"} title={"是否缓存"} key={"menu_id"} dataIndex={"keepAlive"}
-                        render={keepAlive => (<span style={{fontSize: "14px"}}>{keepAlive ? "缓存" : "不缓存"}</span>)}
+                <Column align={"center"} title={"是否缓存"} key={"menu_id"} dataIndex={"keep_alive"}
+                        render={keep_alive => (<span style={{fontSize: "14px"}}>{keep_alive ? "缓存" : "不缓存"}</span>)}
                 />
                 <Column align={"center"} title={"菜单排序"} key={"menu_id"} dataIndex={"weight"}/>
                 <Column align={"center"} title={"操作"} key={"menu_id"} render={col => (
                     <Action record={col.id} onDel={(e) => {
                         console.log(e)
                     }} onAdd={() => {
-                    }} onEdit={()=>{edit(col)}}/>
+                    }} onEdit={() => {
+                        edit(col)
+                    }}/>
                 )}/>
             </Table>
         </>
-
     )
 }
 
-export default connect(mapStateToProps, null)(Menu)
+export default connect(mapStateToProps)(Menu)
