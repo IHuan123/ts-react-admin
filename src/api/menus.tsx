@@ -22,3 +22,10 @@ export function updateMenu(data:any){
         data
     })
 }
+export function deleteMenu(menu_ids:number[]){
+    return request({
+        url:"/api/system/deleteMenu",
+        method:"DELETE",
+        data:{menu_ids}
+    })
+}

@@ -1,20 +1,19 @@
 import React, {useEffect, useState, useRef} from "react";
-import {Table, Modal, Form, Input, Select, Radio} from 'antd';
+import {Table, Modal, Form, Input, Select, Radio, InputNumber} from 'antd';
 import {connect} from "react-redux";
 import Icon from "@/components/Icon/Icon";
-import {getAllMenu,updateMenu} from "@/api/menus";
+import {getAllMenu,updateMenu,deleteMenu} from "@/api/menus";
 import Action from "@/views/system/Menu/Action";
 import {Iconer} from "@/store/actions/icon";
-import { Menuer} from "./MyTable"
+import { reduceMenuList,Menus } from "@/utils"
 
 const {Column} = Table;
 const {Option} = Select;
+
+type Menuer = Menus
 const mapStateToProps = (state: any) => ({
     icons: state.icon.icon
 })
-
-
-
 
 
 function Menu({icons}: { icons: Iconer[] }) {
@@ -58,20 +57,31 @@ function Menu({icons}: { icons: Iconer[] }) {
             }
         })
     }
-    useEffect(() => {
-        console.log('渲染')
-        let ignore = false;
+    //删除
+    const delMenu = (data:Menuer)=>{
+        let ls = reduceMenuList([data])
+        let ids = ls.map(item=>item.menu_id)
+        console.log(ids)
+        deleteMenu(ids).then(res=>{
+            console.log(res)
+            refreshPage()
+        })
+    }
+    //获取数据
+    const getList = ()=>{
         setLoading(true)
         getAllMenu().then(res => {
-            if (!ignore) {
-                setData(res.data)
-                setLoading(false)
-            }
+            setData(res.data)
+            setLoading(false)
         }).catch(e => setLoading(false))
-        return function () {
-            ignore = true;
-        }
+    }
+    useEffect(() => {
+        getList()
     }, [refresh])
+
+    useEffect(()=>{
+
+    },[data])
     // 提交表单
     const submit = () => {
         formEl.current.validateFields().then((values:any) => {
@@ -171,7 +181,7 @@ function Menu({icons}: { icons: Iconer[] }) {
                         name="weight"
                         rules={[{required: true, message: 'Please input your weight!'}]}
                     >
-                        <Input/>
+                        <InputNumber/>
                     </Form.Item>
                 </Form>
             </Modal>
@@ -198,12 +208,8 @@ function Menu({icons}: { icons: Iconer[] }) {
                 />
                 <Column align={"center"} title={"菜单排序"} key={"menu_id"} dataIndex={"weight"}/>
                 <Column align={"center"} title={"操作"} key={"menu_id"} render={col => (
-                    <Action record={col.id} onDel={(e) => {
-                        console.log(e)
-                    }} onAdd={() => {
-                    }} onEdit={() => {
-                        edit(col)
-                    }}/>
+                    <Action onDel={() => { console.log(col);delMenu(col)}} onAdd={() => {
+                    }} onEdit={() => {edit(col)}}/>
                 )}/>
             </Table>
         </>

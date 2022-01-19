@@ -36,7 +36,7 @@ function useRouter(menus: any[]) {
             let list = reduceMenuList(menus);
             // 把请求的数据 和 本地pages页面暴露出的路由列表合并
             let routerList: any[] = routes.map((router) => {
-                router.keepAlive = router.keepAlive === 1;
+                router.keep_alive = router.keep_alive === 1;
                 router.visible = router.visible === 1
                 let find = list.find(
                     (i) => i.key === router.key
@@ -58,7 +58,7 @@ function useRouter(menus: any[]) {
     useEffect(() => {
         const dom = newRoutes.map((item: Menus) => {
             let {key, path} = item;
-            let RouterRender = item.keepAlive ? CacheRoute : Route;
+            let RouterRender = item.keep_alive ? CacheRoute : Route;
             return (
                 <RouterRender key={key} exact={true}
                               path={path}

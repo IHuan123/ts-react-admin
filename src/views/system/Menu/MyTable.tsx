@@ -61,7 +61,7 @@ function MyTable(props:any){
             />
             <Column align={"center"} title={"菜单排序"} key={"menu_id"} dataIndex={"weight"}/>
             <Column align={"center"} title={"操作"} key={"menu_id"} render={col => (
-                <Action record={col.id} onDel={(e) => {
+                <Action onDel={(e) => {
                     console.log(e)
                 }} onAdd={() => {
                 }} onEdit={() => {

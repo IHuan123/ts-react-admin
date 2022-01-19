@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import {Button, Popconfirm, Row} from "antd";
 
 type IProps = {
-    record:any;
     onDel:(e?:any)=>void;
     onEdit:(e?:any)=>void;
     onAdd:(e?:any)=>void;
@@ -12,7 +11,7 @@ export default interface Action {
 }
 export default class MenuAction extends Component{
     render() {
-        const { record,onDel,onEdit,onAdd } = this.props
+        const { onDel,onEdit,onAdd } = this.props
         return (
             <Row>
                 <Button type="link" onClick={ onEdit }>

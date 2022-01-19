@@ -1,6 +1,6 @@
 export interface Menus{
     icon: string;
-    keepAlive: boolean;
+    keep_alive: boolean;
     key: string;
     menu_id: number,
     parentKey: string;
@@ -49,7 +49,6 @@ export function getMenuParentKey(list:Menus, key:string, val:any) {
                     let info:Menus = children[i]
                     info.parent = item;
                     if (info[key] === val){
-
                         return (function find(c):any {
                             res.unshift({icon:c.icon,title:c.title,key:c.key})
                             if (c.parent) return find(c.parent);
