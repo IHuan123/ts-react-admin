@@ -1,28 +1,32 @@
-import React, {useEffect, useState, useRef} from "react";
-import {Table, Modal, Form, Input, Select, Radio, InputNumber} from 'antd';
+import React, {useEffect, useState, useRef, createRef} from "react";
+import {Table} from 'antd';
 import {connect} from "react-redux";
 import Icon from "@/components/Icon/Icon";
-import {getAllMenu,updateMenu,deleteMenu} from "@/api/menus";
+import {getAllMenu, updateMenu, deleteMenu, addMenu} from "@/api/menus";
 import Action from "@/views/system/Menu/Action";
-import {Iconer} from "@/store/actions/icon";
-import { reduceMenuList,Menus } from "@/utils"
+import {reduceMenuList, Menus} from "@/utils"
+import FormModal from "@/views/system/Menu/FormModal";
 
 const {Column} = Table;
-const {Option} = Select;
 
 type Menuer = Menus
+type operate = "add" | "edit" | ""
 const mapStateToProps = (state: any) => ({
     icons: state.icon.icon
 })
 
-
-function Menu({icons}: { icons: Iconer[] }) {
+function Menu() {
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<Menuer[]>([])
     const [checkStrictly] = useState<boolean>(false);
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
-    const [currentForm, setCurrentForm] = useState<any>(null)
-    const [refresh,setRefresh] = useState<number>(0)
+    const [currentForm, setCurrentForm] = useState<any>({
+        keepAlive:0,
+        visible:0,
+        weight:0,
+    })
+    const [refresh, setRefresh] = useState<number>(0)
+    const [submitType, setType] = useState<operate>('')
     const rowSelection = {
         onChange: (selectedRowKeys: any, selectedRows: any) => {
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -34,41 +38,45 @@ function Menu({icons}: { icons: Iconer[] }) {
             console.log(selected, selectedRows, changeRows);
         },
     };
-    const formEl: any = useRef(null)
+    const formEl: any = useRef()
     const handleModel: (visible: boolean) => void = (visible: boolean): void => {
         setModalVisible(visible)
     }
-    const edit = (info: Menuer) => {
-        handleModel(true)
-        setCurrentForm(info)
-        setTimeout(() => {
-            formEl.current.setFieldsValue(info)
-        }, 0)
-    }
-    const refreshPage=()=>{
-        let count = refresh+1
+    //刷新页面数据
+    const refreshPage = () => {
+        let count = refresh + 1
         setRefresh(count)
     }
-    //更新数据
-    const upMenu = (data:any)=>{
-        updateMenu(data).then((res:any)=>{
-            if(res.code===200){
-                refreshPage()
-            }
-        })
-    }
     //删除
-    const delMenu = (data:Menuer)=>{
+    const delMenu = (data: Menuer) => {
         let ls = reduceMenuList([data])
-        let ids = ls.map(item=>item.menu_id)
+        let ids = ls.map(item => item.menu_id)
         console.log(ids)
-        deleteMenu(ids).then(res=>{
+        deleteMenu(ids).then(res => {
             console.log(res)
             refreshPage()
         })
     }
+    //添加数据
+    const add = (info: Menuer) => {
+        setType("add")
+        handleModel(true)
+        setCurrentForm({parent_key: info.key})
+        // setTimeout(() => {
+        //     formEl.current.setFieldsValue({parent_key: info.key})
+        // }, 0)
+    }
+    //编辑
+    const edit = (info: Menuer) => {
+        setType("edit")
+        handleModel(true)
+        setCurrentForm(info)
+        // setTimeout(() => {
+        //     formEl.current.setFieldsValue(info)
+        // }, 0)
+    }
     //获取数据
-    const getList = ()=>{
+    const getList = () => {
         setLoading(true)
         getAllMenu().then(res => {
             setData(res.data)
@@ -78,113 +86,32 @@ function Menu({icons}: { icons: Iconer[] }) {
     useEffect(() => {
         getList()
     }, [refresh])
-
-    useEffect(()=>{
-
-    },[data])
     // 提交表单
     const submit = () => {
-        formEl.current.validateFields().then((values:any) => {
-            let form = Object.assign({},currentForm,values)
-            upMenu(form)
+        formEl.current.validateFields().then((values: any) => {
+            if (submitType === 'edit') {
+                let form = Object.assign({}, currentForm, values)
+                updateMenu(form).then((res: any) => {
+                    if (res.code === 200) {
+                        refreshPage()
+                    }
+                })
+            } else if (submitType === 'add') {
+                let form = Object.assign({parent_key: currentForm.key}, values)
+                addMenu(form).then(res => {
+                    console.log(res)
+                })
+            }
             handleModel(false)
         });
     };
     const onCancel = () => {
-        formEl.current.resetFields();
+        setType("")
         handleModel(false)
     };
     return (
         <>
-            {/*编辑框*/}
-            <Modal  width={"550px"} title="Basic Modal" visible={isModalVisible} onOk={submit} onCancel={onCancel}>
-                <Form
-                    name="basic"
-                    labelCol={{span: 5}}
-                    wrapperCol={{span: 18}}
-                    initialValues={currentForm}
-                    autoComplete="off"
-                    labelAlign="left"
-                    ref={formEl}
-                >
-                    <Form.Item
-                        label="菜单标题"
-                        name="title"
-                        rules={[{required: true, message: 'Please input your title!'}]}
-                    >
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item
-                        label="菜单路径"
-                        name="path"
-                        rules={[{required: true, message: 'Please input your path!'}]}
-                    >
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item
-                        label="菜单key"
-                        name="key"
-                        rules={[{required: true, message: 'Please input your key!'}]}
-                    >
-                        <Input/>
-                    </Form.Item>
-                    <Form.Item
-                        label="父级菜单"
-                        name="parent_key"
-                        rules={[{required: false, message: 'Please input your parent_key!'}]}
-                    >
-                        <Select disabled={!!currentForm && currentForm.parent_key === ""}
-                                placeholder="Please select a country">
-                            {data.map((item: any) => (
-                                <Option value={item.key} key={'select' + item.menu_id}>{item.title}</Option>))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        label="菜单图标"
-                        name="icon"
-                        rules={[{required: true, message: 'Please input your icon!'}]}
-                    >
-                        <Select allowClear={true}
-                                showSearch={true}
-                                placeholder="Please select a country">
-                            {icons.map((item: Iconer) => (
-                                <Option value={item.font_class} key={item.unicode_decimal}>
-                                    <div style={{display: "flex",alignItems:"center"}}>
-                                        <Icon type={item.font_class} style={{fontSize: "20px"}}/><span
-                                        style={{marginLeft: "3px"}}>{item.font_class}</span>
-                                    </div>
-                                </Option>))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        label="显示在菜单"
-                        name="visible"
-                        rules={[{required: true, message: 'Please input your icon!'}]}
-                    >
-                        <Radio.Group>
-                            <Radio value={0}>不显示</Radio>
-                            <Radio value={1}>显示</Radio>
-                        </Radio.Group>
-                    </Form.Item>
-                    <Form.Item
-                        label="是否缓存"
-                        name="keep_alive"
-                        rules={[{required: true, message: 'Please input your keep_alive!'}]}
-                    >
-                        <Radio.Group>
-                            <Radio value={0}>不缓存</Radio>
-                            <Radio value={1}>缓存</Radio>
-                        </Radio.Group>
-                    </Form.Item>
-                    <Form.Item
-                        label="菜单排序"
-                        name="weight"
-                        rules={[{required: true, message: 'Please input your weight!'}]}
-                    >
-                        <InputNumber/>
-                    </Form.Item>
-                </Form>
-            </Modal>
+            <FormModal type={ submitType } visible={isModalVisible} title={"编辑"} form={ currentForm } onCancel={onCancel} submit={submit} refInstance={formEl} selectData={ data }/>
             <Table
                 dataSource={data} loading={loading}
                 style={{padding: "20px 0"}}
@@ -208,8 +135,14 @@ function Menu({icons}: { icons: Iconer[] }) {
                 />
                 <Column align={"center"} title={"菜单排序"} key={"menu_id"} dataIndex={"weight"}/>
                 <Column align={"center"} title={"操作"} key={"menu_id"} render={col => (
-                    <Action onDel={() => { console.log(col);delMenu(col)}} onAdd={() => {
-                    }} onEdit={() => {edit(col)}}/>
+                    <Action onDel={() => {
+                        console.log(col);
+                        delMenu(col)
+                    }} onAdd={() => {
+                        add(col)
+                    }} onEdit={() => {
+                        edit(col)
+                    }}/>
                 )}/>
             </Table>
         </>

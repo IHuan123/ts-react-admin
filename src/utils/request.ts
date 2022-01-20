@@ -34,7 +34,7 @@ severice.interceptors.response.use(response => {
             case 200:
                 return response.data
             case 401:
-                //账号被禁用
+                //账号被禁用 或者登陆过期
                 msg = response.data?.msg
                 message.error(msg || "")
                 store.dispatch(setUserInfo({}))

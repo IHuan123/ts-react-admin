@@ -1,4 +1,5 @@
 import request from "../utils/request"
+import {Menuer} from "@/views/system/Menu/MyTable";
 // import "../mock/index"
 
 export function getMenu(roles:string){
@@ -27,5 +28,12 @@ export function deleteMenu(menu_ids:number[]){
         url:"/api/system/deleteMenu",
         method:"DELETE",
         data:{menu_ids}
+    })
+}
+export function addMenu(data:any){
+    return request({
+        url:"/api/system/addMenu",
+        method:"POST",
+        data:data
     })
 }
