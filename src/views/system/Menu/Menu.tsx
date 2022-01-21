@@ -1,12 +1,13 @@
-import React, {useEffect, useState, useRef, createRef} from "react";
-import {Table} from 'antd';
+import React, {useEffect, useState, useRef} from "react";
+import "./index.scss"
+import {message, Table} from 'antd';
 import {connect} from "react-redux";
 import Icon from "@/components/Icon/Icon";
 import {getAllMenu, updateMenu, deleteMenu, addMenu} from "@/api/menus";
 import Action from "@/views/system/Menu/Action";
 import {reduceMenuList, Menus} from "@/utils"
 import FormModal from "@/views/system/Menu/FormModal";
-
+import CrudOperate from "@/views/system/Menu/CrudOperate";
 const {Column} = Table;
 
 type Menuer = Menus
@@ -14,32 +15,49 @@ type operate = "add" | "edit" | ""
 const mapStateToProps = (state: any) => ({
     icons: state.icon.icon
 })
-
+const defaultForm = {
+    keep_alive:0,
+    visible:0,
+    weight:0,
+    icon: "",
+    key: "",
+    parent_key: "",
+    parent_name: "",
+    path: "",
+    title: "",
+}
 function Menu() {
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<Menuer[]>([])
-    const [checkStrictly] = useState<boolean>(false);
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
     const [currentForm, setCurrentForm] = useState<any>({
-        keepAlive:0,
+        keep_alive:0,
         visible:0,
         weight:0,
+        icon: "",
+        key: "",
+        parent_key: "",
+        parent_name: "",
+        path: "",
+        title: "",
     })
     const [refresh, setRefresh] = useState<number>(0)
     const [submitType, setType] = useState<operate>('')
+    const [selectedRowKeys,setSelectedRowKeys] = useState<any>([])
     const rowSelection = {
         onChange: (selectedRowKeys: any, selectedRows: any) => {
-            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+            setSelectedRowKeys(selectedRowKeys); //需要动态设置选中项目，在删除选中项是需要清除选中状态 ，否则会出现 Tree missing follow keys的错误
         },
         onSelect: (record: any, selected: any, selectedRows: any) => {
-            console.log(record, selected, selectedRows);
+            // console.log(record, selected, selectedRows);
         },
         onSelectAll: (selected: any, selectedRows: any, changeRows: any) => {
-            console.log(selected, selectedRows, changeRows);
+            // console.log(selected, selectedRows, changeRows);
         },
     };
-    const formEl: any = useRef()
+    const formEl: any = useRef<HTMLFormElement>(null)
     const handleModel: (visible: boolean) => void = (visible: boolean): void => {
+        if (!visible) setType("");
         setModalVisible(visible)
     }
     //刷新页面数据
@@ -51,29 +69,44 @@ function Menu() {
     const delMenu = (data: Menuer) => {
         let ls = reduceMenuList([data])
         let ids = ls.map(item => item.menu_id)
-        console.log(ids)
-        deleteMenu(ids).then(res => {
-            console.log(res)
-            refreshPage()
+        ids = Array.from(new Set(ids))
+        deleteMenu(ids).then((res:any) => {
+            if(res.code===200){
+                message.success(res.data)
+                refreshPage()
+            }
+        })
+    }
+    const batchDelMenu = ()=> {
+        let ids:number[] = selectedRowKeys;
+        ids = Array.from(new Set(ids))
+        if(ids.length===0) {
+            message.error("没有选择需要删除的菜单！")
+            return
+        }
+        deleteMenu(ids).then((res:any) => {
+            setSelectedRowKeys([])
+            if(res.code===200){
+                message.success(res.data)
+                refreshPage()
+            }
         })
     }
     //添加数据
-    const add = (info: Menuer) => {
+    const add = (info?: Menuer) => {
         setType("add")
         handleModel(true)
-        setCurrentForm({parent_key: info.key})
-        // setTimeout(() => {
-        //     formEl.current.setFieldsValue({parent_key: info.key})
-        // }, 0)
+        if(info){
+            setCurrentForm({parent_key: info.key})
+        }else{
+            setCurrentForm(defaultForm)
+        }
     }
     //编辑
     const edit = (info: Menuer) => {
         setType("edit")
         handleModel(true)
         setCurrentForm(info)
-        // setTimeout(() => {
-        //     formEl.current.setFieldsValue(info)
-        // }, 0)
     }
     //获取数据
     const getList = () => {
@@ -98,25 +131,26 @@ function Menu() {
                 })
             } else if (submitType === 'add') {
                 let form = Object.assign({parent_key: currentForm.key}, values)
-                addMenu(form).then(res => {
-                    console.log(res)
+                addMenu(form).then((res:any) => {
+                    if (res.code === 200) {
+                        refreshPage()
+                    }
                 })
             }
             handleModel(false)
         });
     };
     const onCancel = () => {
-        setType("")
         handleModel(false)
     };
     return (
-        <>
-            <FormModal type={ submitType } visible={isModalVisible} title={"编辑"} form={ currentForm } onCancel={onCancel} submit={submit} refInstance={formEl} selectData={ data }/>
+        <div className={"container"}>
+            <CrudOperate onAdd={ ()=>{add()} } onDel={ batchDelMenu }/>
             <Table
-                dataSource={data} loading={loading}
-                style={{padding: "20px 0"}}
+                dataSource={data}
+                loading={loading}
                 rowKey={record => record.menu_id}
-                rowSelection={{...rowSelection, checkStrictly}}
+                rowSelection={{...rowSelection, checkStrictly:false,preserveSelectedRowKeys:false,selectedRowKeys:selectedRowKeys}}
             >
                 <Column align={"center"} title={"菜单id"} key={"menu_id"} dataIndex={"menu_id"}/>
                 <Column align={"center"} title={"名称"} key={"menu_id"} dataIndex={"title"}/>
@@ -135,8 +169,7 @@ function Menu() {
                 />
                 <Column align={"center"} title={"菜单排序"} key={"menu_id"} dataIndex={"weight"}/>
                 <Column align={"center"} title={"操作"} key={"menu_id"} render={col => (
-                    <Action onDel={() => {
-                        console.log(col);
+                    <Action permission={["edit",!col.parent_key ? "add":"","del"]} onDel={() => {
                         delMenu(col)
                     }} onAdd={() => {
                         add(col)
@@ -145,7 +178,8 @@ function Menu() {
                     }}/>
                 )}/>
             </Table>
-        </>
+            <FormModal type={ submitType } visible={isModalVisible} title={"编辑"} form={ currentForm } onCancel={ onCancel } submit={submit} refInstance={formEl} selectData={ data }/>
+        </div>
     )
 }
 

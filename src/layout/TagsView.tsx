@@ -1,6 +1,6 @@
 import React,{Component} from "react"
-// @ts-ignore
-import { withRouter, Link } from "react-router-dom"
+
+import { withRouter } from "react-router-dom"
 import { connect } from "react-redux"
 import {Breadcrumb, Tag} from 'antd';
 import { delCloseMenuTag } from "@/store/actions/menu";
@@ -11,7 +11,7 @@ import {Dispatch} from "redux";
 
 class TagsView extends Component<any>{
     render(){
-        const { openMenuTags=[],selectMenu,breadcrumb=[] } = this.props;
+        const { openMenuTags=[],selectMenu,breadcrumb=[],history } = this.props;
         return (
             <div className={"tag-container"}>
                 {
@@ -33,7 +33,9 @@ class TagsView extends Component<any>{
                                 style={{height:40,borderRight:"1px solid #FFFFFF",padding:"0 10px",margin:0,borderRadius:0}}
                                 color={selectMenu.key===item.key ? "#108ee9" : "#CFD8DC"}
                                 closable={openMenuTags.length>1} onClose={ ()=>{this.closeTag(item)} }
-                            ><Link style={{lineHeight:"40px"}} to={item.path}>{item.title}</Link></Tag>
+                            >
+                                <div style={{height:"40px",lineHeight:"40px",display:'inline-block',justifyContent:'center',alignItems:'center',cursor:"pointer"}} onClick={ ()=>history.push(item.path) }>{item.title}</div>
+                            </Tag>
                         </div>
                     ) ) }
                 </div>

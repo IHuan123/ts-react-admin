@@ -1,7 +1,7 @@
 import { Form, Input, InputNumber, Modal, Radio, Select } from "antd";
 import {Iconer} from "@/store/actions/icon";
 import Icon from "@/components/Icon/Icon";
-import React, {useRef, useState, forwardRef, ForwardedRef, useEffect} from "react";
+import React, {useRef, useImperativeHandle, forwardRef, ForwardedRef, useEffect} from "react";
 import {Menus} from "@/utils"
 import {connect} from "react-redux";
 
@@ -25,9 +25,9 @@ const mapStateToProps = (state: any) => ({
     icons: state.icon.icon
 })
 
+
 const FormModal = ({visible, submit, onCancel, selectData, icons, title, refInstance, form ,type }: IProps)=>{
     const cancel = () => {
-        (refInstance as any).current.resetFields();
         onCancel()
     }
     const handleSubmit = ()=>{
@@ -43,19 +43,22 @@ const FormModal = ({visible, submit, onCancel, selectData, icons, title, refInst
                     (refInstance as any).current.setFieldsValue({parent_key:form.parent_key,keep_alive:0,visible:0, weight:0,});
                     break;
                 default:
+
                     break;
             }
-
         }
-
     },[type])
+    useEffect(() => {
+        if (!visible && refInstance && (refInstance as any).current) {
+            (refInstance as any).current.resetFields();
+        }
+    }, [visible])
     return (
         <Modal width={"550px"} title={title} visible={ visible } onOk={ handleSubmit } onCancel={cancel}>
             <Form
                 name="basic"
                 labelCol={{span: 5}}
                 wrapperCol={{span: 18}}
-                initialValues={ form }
                 autoComplete="off"
                 labelAlign="left"
                 ref={ refInstance }
@@ -86,10 +89,12 @@ const FormModal = ({visible, submit, onCancel, selectData, icons, title, refInst
                         <Form.Item
                             label="父级菜单"
                             name="parent_key"
-                            rules={[{required: false, message: 'Please input your parent_key!'}]}
+                            rules={[{required: false, message: 'Please select a parent menu!'}]}
                         >
-                            <Select disabled={!!form && form.parent_key === ""}
-                                    placeholder="Please select a country">
+                            <Select allowClear={true}
+                                    showSearch={true}
+                                    disabled={!!form && form.parent_key === ""}
+                                    placeholder="Please select a parent menu">
                                 {selectData.map((item: Menuer) => (
                                     <Option value={item.key} key={'select' + item.menu_id}>{item.title}</Option>))}
                             </Select>
@@ -103,7 +108,7 @@ const FormModal = ({visible, submit, onCancel, selectData, icons, title, refInst
                 >
                     <Select allowClear={true}
                             showSearch={true}
-                            placeholder="Please select a country">
+                            placeholder="Please select a icon">
                         {icons.map((item: Iconer) => (
                             <Option value={item.font_class} key={item.unicode_decimal}>
                                 <div style={{display: "flex", alignItems: "center"}}>
@@ -145,9 +150,11 @@ const FormModal = ({visible, submit, onCancel, selectData, icons, title, refInst
     )
 }
 
-const ForwardModal = forwardRef((props:IProps,ref:ForwardedRef<any>)=>(
-    <FormModal { ...props } refInstance ={ ref }/>
-))
+const ForwardModal = forwardRef((props:IProps,ref:ForwardedRef<any>)=>{
+    return (
+        <FormModal { ...props } refInstance ={ ref }/>
+    )
+})
 
 const DialogForm = (props:IProps)=>{
     return(

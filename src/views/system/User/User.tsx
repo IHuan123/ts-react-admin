@@ -8,7 +8,7 @@ export default function User() {
     const [checkStrictly] = useState(false);
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true)
-    const [isModalVisible, setModalVisible] = useState(true)
+    const [isModalVisible, setModalVisible] = useState(false)
     const rowSelection = {
         onChange: (selectedRowKeys:any, selectedRows:any) => {
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
