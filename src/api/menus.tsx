@@ -1,7 +1,18 @@
 import request from "../utils/request"
-import {Menuer} from "@/views/system/Menu/MyTable";
 // import "../mock/index"
-
+export interface Menuer {
+    icon: string;
+    keep_alive: number;
+    key: string;
+    menu_id: number;
+    parent_key: string;
+    parent_name: string;
+    path: string;
+    title: string;
+    visible: number;
+    weight: number;
+    children?: Menuer[];
+}
 export function getMenu(roles:string){
     return request({
         url:"/api/user/getMenus",

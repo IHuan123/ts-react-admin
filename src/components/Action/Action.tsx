@@ -1,21 +1,22 @@
 import React, {Component} from "react";
-import {Button, Popconfirm, Row} from "antd";
+import {Button, Popconfirm} from "antd";
 
 interface MProps {
     permission: Array<string>;
-    onDel: (e: any) => void;
-    onEdit: (e: any) => void;
-    onAdd: (e: any) => void;
+    delTitle?:string,
+    onDel?: (e: any) => void;
+    onEdit?: (e: any) => void;
+    onAdd?: (e: any) => void;
 }
-
+export type operate = "add" | "edit" | ""
 export default class MenuAction extends Component<MProps> {
     public render() {
-        const {onDel, onEdit, onAdd, permission} = this.props;
+        const {onDel, onEdit, onAdd, permission,delTitle="确认删除？"} = this.props;
         let edit = permission.indexOf("edit") > -1;
         let add = permission.indexOf("add") > -1;
         let del = permission.indexOf("del") > -1;
         return (
-            <Row>
+            <div>
                 { edit && <Button type="link" onClick={onEdit}>
                     编辑
                 </Button> }
@@ -25,12 +26,12 @@ export default class MenuAction extends Component<MProps> {
                 { del && <Popconfirm
                     onConfirm={ onDel }
                     okText="确认"
-                    title="删除选中菜单会一同删除其下所有子菜单，确认删除？"
+                    title={delTitle}
                     cancelText="取消"
                 >
                     <Button type="link" danger>删除</Button>
                 </Popconfirm> }
-            </Row>
+            </div>
         );
     }
 }

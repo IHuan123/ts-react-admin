@@ -1,139 +1,250 @@
 .flex{
-    display: flex;
+  display: flex;
 }
 .row{
-    flex-direction: row;
+  flex-direction: row;
 }
 .col{
-    flex-direction: column;
+  flex-direction: column;
 }
 .input{
-    .ant-input{
-        font-size: 14px !important;
-        font-weight: bold;
-        color: #eee;
-        &::placeholder {
-            color: rgb(153, 153, 153);
-            font-weight: bold;
-        }
-     }
+  .ant-input{
+    font-size: 14px !important;
+    font-weight: bold;
+    color: #eee;
+    &::placeholder {
+      color: rgb(153, 153, 153);
+      font-weight: bold;
+    }
+  }
 }
 @keyframes rotate{
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 .login{
-    width:100%;
-    height:100vh;
-    top: 0;
-    bottom: 0;
-    z-index: 1;
-    background: url(../../assets/images/bg1.jpg) no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  width:100%;
+  height:100vh;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  background: url(../../assets/images/bg-img.jpg) no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 $loginHeight:310px;
 $loginRW:350px;
 $loginLW:250px;
 $p:30px;
 .login-container{
-    width:$loginLW + $loginRW;
-    height:$loginHeight;
-    text-shadow: none;
-    box-sizing: border-box;
-    border-radius: 10px;
+  width:$loginLW + $loginRW;
+  height:$loginHeight;
+  text-shadow: none;
+  box-sizing: border-box;
+  border-radius:15px;
+  overflow: hidden;
+  z-index: 1;
+  position: relative;
+  box-shadow: 0 5px 10px 5px rgba(110, 110, 110, 0.1);
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: row;
+  .login-left{
+    width:$loginLW;
+    height: $loginHeight;
     overflow: hidden;
-    z-index: 1;
+    box-sizing: border-box;
     position: relative;
-    box-shadow: 0 5px 10px 5px rgba(110, 110, 110, 0.1);
-    backdrop-filter: blur(20px);
-    //&::before{
-    //    content: "";
-    //    position: absolute;
-    //    top: -$p/2;
-    //    left: -$p/2;
-    //    width:$loginLW + $loginRW + $p;
-    //    height:$loginHeight + $p;
-    //    background: url(../../assets/images/bg1.jpg) no-repeat;
-    //    background-attachment: fixed;
-    //    background-size: cover;
-    //    background-position: center;
-    //    filter: blur(8px);
-    //    z-index: -1;
-    //    padding:$p / 2;
-    //}
-    .avatar-box{
-        @extend .flex;
-        width:$loginLW;
-        height: $loginHeight;
-        overflow: hidden;
-        box-sizing: border-box;
-        position: relative;
-        float: left;
-        justify-content: center;
-        align-items: center;
-        .avatar{
-            width: 100px;
-            height: 100px;
-            z-index: 2;
-            object-fit: cover;
-            border-radius: 100%;
-            border:3px solid rgba(218, 218, 218, 0.6);
-        }
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .avatar{
+      width: 120px;
+      height: 120px;
+      z-index: 2;
+      object-fit: cover;
+      border-radius: 48% 52% 70% 30% / 31% 31% 69% 69% ;
+      border:3px solid rgba(218, 218, 218, 0.6);
+      position: relative;
+      animation:8s linear infinite  avatar-animation;
+    }
+    .decorate-box{
+      width:$loginLW;
+      height: $loginHeight;
+      overflow: hidden;
+      box-sizing: border-box;
+      position: absolute;
+      left:0;
+      top:0;
+      z-index: 1;
+      $DSize:150px;
+      filter: contrast(20);
+      @mixin decorate{
+        width: $DSize;
+        height: $DSize;
+        border-radius: 48% 52% 70% 30% / 31% 31% 69% 69% ;
+        position: absolute;
+        left:($loginLW - $DSize)/2;
+        top:($loginHeight - $DSize)/2;
+        filter:  blur(1px);
+      }
+      &:before{
+        display: block;
+        content: "";
+        @include decorate();
+        animation:16s linear infinite  move-border-radius-1;
+        background: #fff;
+      }
+      &:after{
+        display: block;
+        content: "";
+        background: #fff;
+        @include decorate();
+        animation:16s linear infinite  move-border-radius-2;
+      }
 
     }
-    .login-form{
-        width:$loginRW;
-        height:$loginHeight;
-        box-sizing: border-box;
-        padding:20px;
-        background:rgba(75, 75, 75, 0.5);
-        float: right;
-        .login-btn{
-            width:100%;
-            height:40px;
-            border-radius: 7px;
-            // background-color:black;
-            box-shadow:0px 0px 10px 2px rgba(0,255,235,0.3);
-            border:1px solid #9febe0;
-            color:#9febe0;
-        }
-        .item{
-            width:100%;
-            box-sizing: border-box;
-            &:first-child{
-                margin-top:0px;
-            }
-        }
-        .code{
-            .code-input{
-                width:360px;
-                margin-right: 10px;
-            }
-            .login-code{
-                object-fit: contain;
-                border-radius: 5px;
-                opacity: 0.7;
-            }
-        }
-        .remember-password{
-            margin-bottom: 10px;
-        }
-        .input{
-            height:40px;
-            border-radius: 7px;
-            background-color: rgba(43, 43, 43, 0.4);
-            color:#ffffff !important;
-            font-weight: bold !important;
-        }
+    @keyframes avatar-animation {
+      0%{
+        border-radius: 48% 52% 70% 30% / 31% 31% 69% 69% ;
+      }
+      10%{
+        border-radius: 58% 42% 78% 22% / 60% 45% 55% 81%  ;
+      }
+      25%{
+        border-radius: 60% 29% 50% 20% / 30% 61% 39% 88%  ;
+      }
+      35%{
+        border-radius: 59% 41% 68% 32% / 43% 51% 49% 77%  ;
+      }
+      50%{
+        border-radius: 43% 57% 53% 47% / 35% 46% 54% 65%  ;
+      }
+      65%{
+        border-radius: 32% 68% 43% 57% / 43% 38% 62% 57%  ;
+      }
+      75%{
+        border-radius: 40% 78% 36% 64% / 51% 34% 66% 49%  ;
+      }
+      90%{
+        border-radius: 32% 68% 46% 54% / 57% 41% 59% 43%  ;
+      }
     }
+    @keyframes move-border-radius-1 {
+      0%{
+        border-radius: 48% 52% 70% 30% / 31% 31% 69% 69% ;
+      }
+      10%{
+        border-radius: 58% 42% 78% 22% / 60% 45% 55% 81%  ;
+      }
+      25%{
+        border-radius: 60% 29% 50% 20% / 30% 61% 39% 88%  ;
+      }
+      35%{
+        border-radius: 59% 41% 68% 32% / 43% 51% 49% 77%  ;
+      }
+      50%{
+        border-radius: 43% 57% 53% 47% / 35% 46% 54% 65%  ;
+      }
+      65%{
+        border-radius: 32% 68% 43% 57% / 43% 38% 62% 57%  ;
+      }
+      75%{
+        border-radius: 40% 78% 36% 64% / 51% 34% 66% 49%  ;
+      }
+      90%{
+        border-radius: 32% 68% 46% 54% / 57% 41% 59% 43%  ;
+      }
+      100%{
+        border-radius: 48% 52% 70% 30% / 31% 31% 69% 69% ;
+        transform: rotateZ(360deg);
+      }
+    }
+    @keyframes move-border-radius-2 {
+      0%{
+        border-radius: 48% 52% 70% 30% / 31% 31% 69% 69% ;
+      }
+      10%{
+        border-radius: 58% 42% 78% 22% / 60% 45% 55% 81%  ;
+      }
+      25%{
+        border-radius: 60% 29% 50% 20% / 30% 61% 39% 88%  ;
+      }
+      35%{
+        border-radius: 59% 41% 68% 32% / 43% 51% 49% 77%  ;
+      }
+      50%{
+        border-radius: 43% 57% 53% 47% / 35% 46% 54% 65%  ;
+      }
+      65%{
+        border-radius: 32% 68% 43% 57% / 43% 38% 62% 57%  ;
+      }
+      75%{
+        border-radius: 40% 78% 36% 64% / 51% 34% 66% 49%  ;
+      }
+      90%{
+        border-radius: 32% 68% 46% 54% / 57% 41% 59% 43%  ;
+      }
+      100%{
+        border-radius: 48% 52% 70% 30% / 31% 31% 69% 69% ;
+        transform: rotateZ(-360deg);
+      }
+    }
+  }
+
+
+
+  .login-form{
+    width:$loginRW;
+    height:$loginHeight;
+    box-sizing: border-box;
+    padding:20px;
+    background:rgba(75, 75, 75, 0.5);
+    .login-btn{
+      width:100%;
+      height:40px;
+      border-radius: 7px;
+      // background-color:black;
+      box-shadow:0px 0px 10px 2px rgba(0,255,235,0.3);
+      border:1px solid #9febe0;
+      color:#9febe0;
+    }
+    .item{
+      width:100%;
+      box-sizing: border-box;
+      &:first-child{
+        margin-top:0px;
+      }
+    }
+    .code{
+      .code-input{
+        width:360px;
+        margin-right: 10px;
+      }
+      .login-code{
+        object-fit: contain;
+        border-radius: 5px;
+        opacity: 0.7;
+      }
+    }
+    .remember-password{
+      margin-bottom: 10px;
+    }
+    .input{
+      height:40px;
+      border-radius: 7px;
+      background-color: rgba(43, 43, 43, 0.4);
+      color:#ffffff !important;
+      font-weight: bold !important;
+    }
+  }
 }
-

@@ -4,14 +4,13 @@ import {message, Table} from 'antd';
 import {connect} from "react-redux";
 import Icon from "@/components/Icon/Icon";
 import {getAllMenu, updateMenu, deleteMenu, addMenu} from "@/api/menus";
-import Action from "@/views/system/Menu/Action";
+import Action,{operate} from "@/components/Action/Action"
 import {reduceMenuList, Menus} from "@/utils"
 import FormModal from "@/views/system/Menu/FormModal";
 import CrudOperate from "@/views/system/Menu/CrudOperate";
 const {Column} = Table;
-
 type Menuer = Menus
-type operate = "add" | "edit" | ""
+
 const mapStateToProps = (state: any) => ({
     icons: state.icon.icon
 })
@@ -169,7 +168,7 @@ function Menu() {
                 />
                 <Column align={"center"} title={"菜单排序"} key={"menu_id"} dataIndex={"weight"}/>
                 <Column align={"center"} title={"操作"} key={"menu_id"} render={col => (
-                    <Action permission={["edit",!col.parent_key ? "add":"","del"]} onDel={() => {
+                    <Action delTitle={"删除选中菜单会一同删除其下所有子菜单，确认删除？"} permission={["edit",!col.parent_key ? "add":"","del"]} onDel={() => {
                         delMenu(col)
                     }} onAdd={() => {
                         add(col)

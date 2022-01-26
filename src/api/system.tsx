@@ -12,3 +12,10 @@ export function getRoles(){
         method:"get"
     })
 }
+export function roleGetMenus(params:{ rid:string }){
+    return request({
+        url:"/api/system/getRolesMenus",
+        method:"GET",
+        params
+    })
+}

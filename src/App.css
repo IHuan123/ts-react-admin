@@ -1,2 +1,8 @@
 @import '~antd/dist/antd.css';
-
+:root{
+    --font-size: 35px;
+}
+body{
+    font-family: 'Quiksand',sans-serif;
+    margin:0;
+}
