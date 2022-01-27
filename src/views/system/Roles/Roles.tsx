@@ -1,7 +1,7 @@
 import {useEffect, useState, useRef} from "react";
-import {Table} from 'antd';
+import {Table,Row,Col,Tree} from 'antd';
 import {getRoles,roleGetMenus} from "@/api/system";
-
+import {getAllMenu} from "@/api/menus";
 import FormModal from "@/views/system/Roles/FormModal";
 import Action,{operate} from "@/components/Action/Action"
 const {Column} = Table
@@ -36,16 +36,12 @@ function Roles() {
         if (!visible) setType("");
         setModalVisible(visible)
     }
-    //通过角色id查询所有菜单
-    const getMenus = (id:number)=>{
 
-    }
     //编辑
-    const edit = (info: any) => {
+    const edit = async (info: any) => {
         setType("edit")
-        roleGetMenus({rid:info.id}).then(res=>{
-            console.log(res)
-        })
+        let res = await roleGetMenus({rid:info.id})
+        setForm(info)
         handleModel(true)
     }
     const cancel = () => {
@@ -65,28 +61,39 @@ function Roles() {
                 setData(res.data)
             }
         }).catch(e => setLoading(false))
+        getAllMenu().then(res=>{
+            console.log(res)
+        })
         return function (){
             ignore = true;
         }
     }, [])
     return (
         <>
-            <FormModal visible={ isModalVisible } title={"base model"} form={ form } type={ submitType } submit={ submit } onCancel={ cancel } ref={formEl}/>
-            <Table
-                dataSource={data}
-                loading={loading}
-                style={{padding: "20px 0"}}
-                rowKey={record => record.id}
-                rowSelection={{...rowSelection, checkStrictly}}
-            >
-                <Column align={"center"} title={"角色id"} key={"id"} dataIndex={"id"}/>
-                <Column align={"center"} title={"角色名称"} key={"id"} dataIndex={"name"}/>
-                <Column  align={"center"} width={ 200 } title={"操作"} key={"id"} render={col => (<>
-                    <Action onDel={()=>{}} onEdit={()=>{
-                        edit(col)
-                    }} permission={["edit","del"]}/>
-                </>)}/>
-            </Table>
+            <FormModal visible={ isModalVisible } title={"base model"} form={ form } type={ submitType } submit={ submit } onCancel={ cancel } ref={ formEl }/>
+            <Row>
+                <Col span={18}>
+                    <Table
+                        dataSource={data}
+                        loading={loading}
+                        style={{padding: "20px 0"}}
+                        rowKey={record => record.id}
+                        rowSelection={{...rowSelection, checkStrictly}}
+                    >
+                        <Column align={"center"} title={"角色id"} key={"id"} dataIndex={"id"}/>
+                        <Column align={"center"} title={"角色名称"} key={"id"} dataIndex={"name"}/>
+                        <Column align={"center"} title={"权限范围"} key={"id"} dataIndex={"dataScope"}/>
+                        <Column  align={"center"} width={ 200 } title={"操作"} key={"id"} render={col => (<>
+                            <Action onDel={()=>{}} onEdit={()=>{
+                                edit(col)
+                            }} permission={["edit","del"]}/>
+                        </>)}/>
+                    </Table>
+                </Col>
+                <Col span={6}>
+                    {/*<Tree></Tree>*/}
+                </Col>
+            </Row>
         </>
 
     )
