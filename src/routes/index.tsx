@@ -17,7 +17,6 @@ import routes from "@/routes/routes"
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 import './index.scss';
 
-
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
         setMenus: (list: any[]) => dispatch(setMenus(list)),
@@ -36,19 +35,22 @@ function useRouter(menus: any[]) {
             let list = reduceMenuList(menus);
             // 把请求的数据 和 本地pages页面暴露出的路由列表合并
             let routerList: any[] = routes.map((router) => {
-                router.keep_alive = router.keep_alive === 1;
-                router.visible = router.visible === 1
-                let find = list.find(
+                let find: any = list.find(
                     (i) => i.key === router.key
                 );
                 if (find) {
+                    router.visible = find.visible === 1
+                    router.keep_alive = find.keep_alive === 1
                     router = {...find, ...router};
-                } else {
-                    router.key = router.path;
                 }
-                router.path = router.parentPath ? router.parentPath + router.path : router.path
+                if(find){
+                    router.path = find.parentPath ? find.parentPath + find.path : find.path
+                }
                 return router;
             });
+            routerList = routerList.filter(item=>{
+                return !!item.path
+            })
             if (list && list.length) {
                 setNewRoutes(routerList)
             }
@@ -77,6 +79,7 @@ const Router = ({menus}: any) => {
     const {routerBody} = useRouter(menus);
     const location = window.location
     useEffect(() => {
+
     }, [menus])
     return (
         <TransitionGroup>

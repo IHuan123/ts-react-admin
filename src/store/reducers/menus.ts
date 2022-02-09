@@ -1,5 +1,12 @@
-import { SET_MENUS, SET_OPEN_MENUS_KEYS, SET_SELECT_MENU, ADD_OPEN_MENUS_TAG, DEL_CLOSE_MENUS_TAG,SET_BREADCRUMB } from "../constants";
-import {Menus} from "@/utils";
+import {
+    SET_MENUS,
+    SET_OPEN_MENUS_KEYS,
+    SET_SELECT_MENU,
+    ADD_OPEN_MENUS_TAG,
+    DEL_CLOSE_MENUS_TAG,
+    SET_BREADCRUMB,
+    CLEAR_MENU_TAG
+} from "../constants";
 import {
     ADD_OPEN_MENUS_TAGAction,
     MenuActionsType,
@@ -8,6 +15,7 @@ import {
     SET_SELECT_MENUAction,
     SelectMenu, CLOSE_MENUAction, SET_BREADCRUMBAction
 } from "@/store/actions/menu";
+import {Menus} from "@/utils";
 
 type MenuTags = SelectMenu
 interface DefaultState {
@@ -33,22 +41,16 @@ export default function menus(state = defaultState, action:MenuActionsType) {
             return { ...state, selectMenu: (action as SET_SELECT_MENUAction).selectMenu }
         case ADD_OPEN_MENUS_TAG: //添加 顶部标签
             let openMenu = (action as ADD_OPEN_MENUS_TAGAction).openMenu;
-            let isSome = openMenuTags.some(item => {
-                return item.key === openMenu.key
-            })
-            if (!isSome) {
-                openMenuTags.push(openMenu)
-            }
+            let isSome = openMenuTags.some(item =>   item.key === openMenu.key)
+            if (!isSome) openMenuTags.push(openMenu);
             return { ...state, openMenuTags: openMenuTags }
         case DEL_CLOSE_MENUS_TAG: //close 顶部标签
             let closeMenuKey = (action as CLOSE_MENUAction).closeMenu;
-            let index = openMenuTags.findIndex(item => {
-                return item.key === closeMenuKey
-            })
-            if (index>-1) {
-                openMenuTags.splice(index,1)
-            }
+            let index = openMenuTags.findIndex(item => item.key === closeMenuKey)
+            if (index>-1) openMenuTags.splice(index,1);
             return { ...state, openMenuTags: openMenuTags }
+        case CLEAR_MENU_TAG: //清除tag
+            return { ...state, openMenuTags: [] }
         case SET_BREADCRUMB: //设置面包屑
             return {...state,breadcrumb:(action as SET_BREADCRUMBAction).breadcrumb}
         default:

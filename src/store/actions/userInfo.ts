@@ -2,6 +2,7 @@ import { Dispatch } from 'redux';
 import {login, getUserInfo} from "@/api/user"
 import {USER_INFO, TOKEN, USER_INFO_TYPE, TOKEN_TYPE} from "../constants/index"
 import {message} from "antd"
+import {clearMenuTag} from "@/store/actions/menu";
 
 
 export interface TOKEN_TYPEActions{
@@ -52,6 +53,7 @@ export const getUser = () => (dispatch:Dispatch) => {
 }
 //登出
 export const loginOut = () => (dispatch:Dispatch) => {
+    dispatch(clearMenuTag()) //清除顶部tag
     dispatch(setUserInfo({}))
     dispatch(setToken(null))
 }

@@ -1,7 +1,11 @@
 import loadable from "@loadable/component";
-import dynamicRoutesMap from "./dynamicRoutes";
+import dynamicRoutesMap from "@/routes/dynamicRoutes";
 const NotFound = loadable(() => import("@/views/404/NotFound"));
 const Error = loadable(() => import("@/views/Error/Error"));
+/***
+ * 固定路由需要有固定的key
+ * 生成的路由不需要，由数据库记录
+ */
 const defaultRoutes = [
   {
     path: "/",
@@ -10,8 +14,9 @@ const defaultRoutes = [
   },
   {
     path: "/result/404",
+    key:"/result/404",
     title: "页面不存在",
-    components: NotFound,
+    component: NotFound,
   },
   {
     path: "/result/403",
@@ -19,7 +24,7 @@ const defaultRoutes = [
     errTitle: "403",
     key:"403",
     subTitle: "Sorry, you don't have access to this page.",
-    components: Error,
+    component: Error,
   },
   {
     path: "/result/500",
@@ -27,7 +32,7 @@ const defaultRoutes = [
     errTitle: "500",
     key:"500",
     subTitle: "Sorry, the server is reporting an error.",
-    components: Error,
+    component: Error,
   },
   {
     path: "*",
@@ -35,8 +40,6 @@ const defaultRoutes = [
     to:"/result/404"
   },
 ];
-const list:any[] = dynamicRoutesMap.map((c) => ({ ...c, components: loadable(c.component) }));
-
+let list:any[] = dynamicRoutesMap.map((c:any) => ({ ...c, component: loadable(c.component) }));
 list.push(...defaultRoutes);
-
 export default list;

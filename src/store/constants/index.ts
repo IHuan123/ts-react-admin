@@ -20,6 +20,10 @@ export type DEL_CLOSE_MENUS_TAG_TYPE = typeof DEL_CLOSE_MENUS_TAG
 export const SET_SELECT_MENU:string = "SET_SELECT_MENU"    //设置当前打开页面信息
 export type SET_SELECT_MENU_TYPE = typeof SET_SELECT_MENU
 
+export const CLEAR_MENU_TAG:string = "CLEAR_MENU_TAG"
+export type CLEAR_MENU_TAG_TYPE = typeof CLEAR_MENU_TAG
+
+
 export const SET_BREADCRUMB:string = "SET_BREADCRUMB"  //设置面包屑
 export type SET_BREADCRUMB_TYPE = typeof SET_BREADCRUMB
 

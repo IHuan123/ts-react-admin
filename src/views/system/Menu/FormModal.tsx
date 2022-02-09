@@ -43,17 +43,14 @@ const FormModal = ({visible, submit, onCancel, selectData, icons, title, refInst
                 case "add":
                     (refInstance as any).current.setFieldsValue({parent_key:form.parent_key,keep_alive:0,visible:0, weight:0,});
                     break;
-                default:
-
-                    break;
             }
         }
-    },[type])
+    },[type,refInstance,form])
     useEffect(() => {
         if (!visible && refInstance && (refInstance as any).current) {
             (refInstance as any).current.resetFields();
         }
-    }, [visible])
+    }, [visible,refInstance])
     return (
         <Modal width={"550px"} title={title} visible={ visible } onOk={ handleSubmit } onCancel={cancel}>
             <Form

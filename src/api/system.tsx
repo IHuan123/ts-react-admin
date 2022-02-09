@@ -19,3 +19,25 @@ export function roleGetMenus(params:{ rid:string }){
         params
     })
 }
+
+
+export interface UpdateParams {
+    id: number;
+    name: string;
+    dataScope: string
+}
+export function updateRoles(data:UpdateParams){
+    return request({
+        url:"/api/system/updateRoles",
+        method:"PUT",
+        data
+    })
+}
+
+export function delRoles(ids:number[]){
+    return request({
+        url:"/api/system/deleteRoles",
+        method:"DELETE",
+        data:{ids}
+    })
+}

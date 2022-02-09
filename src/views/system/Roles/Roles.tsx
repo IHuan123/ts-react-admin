@@ -1,17 +1,24 @@
-import {useEffect, useState, useRef} from "react";
-import {Table,Row,Col,Tree} from 'antd';
-import {getRoles,roleGetMenus} from "@/api/system";
-import {getAllMenu} from "@/api/menus";
+import React, {useEffect, useState, useRef} from "react";
+import {Table, Row, Col, Tree, Card, message} from 'antd';
+import {getRoles, updateRoles, delRoles, UpdateParams } from "@/api/system";
 import FormModal from "@/views/system/Roles/FormModal";
 import Action,{operate} from "@/components/Action/Action"
+import menuData from "@/mock/data/menus"
+import {addMenu, deleteMenu} from "@/api/menus";
+import {  } from "@/api/system";
+import {reduceMenuList} from "@/utils";
+
 const {Column} = Table
 
 interface RoleForm {
     name:string;
     dataScope:string;
+    id?:number
 }
-
-
+const defaultForm = {
+    name:"",
+    dataScope:""
+}
 function Roles() {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true)
@@ -19,7 +26,7 @@ function Roles() {
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
     const [submitType, setType] = useState<operate>('')
     const formEl: any = useRef<HTMLFormElement>(null)
-    const [form,setForm] = useState<RoleForm|null>()
+    const [form,setForm] = useState<RoleForm|null>(defaultForm)
     // rowSelection objects indicates the need for row selection
     const rowSelection = {
         onChange: (selectedRowKeys:any, selectedRows:any) => {
@@ -36,21 +43,64 @@ function Roles() {
         if (!visible) setType("");
         setModalVisible(visible)
     }
-
+    const [refresh, setRefresh] = useState<number>(0)
+    //刷新页面数据
+    const refreshPage = () => {
+        let count = refresh + 1
+        setRefresh(count)
+    }
     //编辑
-    const edit = async (info: any) => {
+    const edit = (info: any) => {
         setType("edit")
-        let res = await roleGetMenus({rid:info.id})
         setForm(info)
         handleModel(true)
     }
+    //删除
+    const del = (data: {
+        name: string;
+        dataScope: string;
+        id: number
+    }[]) => {
+        let ids = data.map(item => item.id)
+        ids = Array.from(new Set(ids))
+        delRoles(ids).then((res: any) => {
+            if (res.code === 200) {
+                message.success(res.data)
+                refreshPage()
+            }
+        })
+    }
+
     const cancel = () => {
         setType("")
         handleModel(false)
     }
-    const submit = (info:any)=>{
-
+    const submit = ()=>{
+        formEl.current.validateFields().then((values:{name: string; dataScope: string})=>{
+            console.log(values)
+            if (submitType === 'edit') {
+                let params:UpdateParams = Object.assign({id:null}, form, values)
+                updateRoles(params).then((res: any) => {
+                    if (res.code === 200) {
+                        refreshPage()
+                    }
+                })
+            } else if (submitType === 'add') {
+                let params = Object.assign({}, form, values)
+                addMenu(params).then((res:any) => {
+                    if (res.code === 200) {
+                        refreshPage()
+                    }
+                })
+            }
+            handleModel(false)
+        })
     }
+
+
+    const onSelect = (selectedKeys: React.Key[], info: any) => {
+        console.log('selected', selectedKeys, info);
+    };
 
 
     useEffect(() => {
@@ -61,17 +111,25 @@ function Roles() {
                 setData(res.data)
             }
         }).catch(e => setLoading(false))
-        getAllMenu().then(res=>{
-            console.log(res)
-        })
         return function (){
             ignore = true;
         }
     }, [])
+    //获取数据
+    const getList = () => {
+        setLoading(true)
+        getRoles().then(res => {
+            setData(res.data)
+            setLoading(false)
+        }).catch(e => setLoading(false))
+    }
+    useEffect(() => {
+        getList()
+    }, [refresh])
     return (
         <>
             <FormModal visible={ isModalVisible } title={"base model"} form={ form } type={ submitType } submit={ submit } onCancel={ cancel } ref={ formEl }/>
-            <Row>
+            <Row gutter={[16,16]}>
                 <Col span={18}>
                     <Table
                         dataSource={data}
@@ -83,15 +141,28 @@ function Roles() {
                         <Column align={"center"} title={"角色id"} key={"id"} dataIndex={"id"}/>
                         <Column align={"center"} title={"角色名称"} key={"id"} dataIndex={"name"}/>
                         <Column align={"center"} title={"权限范围"} key={"id"} dataIndex={"dataScope"}/>
-                        <Column  align={"center"} width={ 200 } title={"操作"} key={"id"} render={col => (<>
-                            <Action onDel={()=>{}} onEdit={()=>{
+                        <Column align={"center"} width={200} title={"操作"} key={"id"} render={col => (<>
+                            <Action onDel={() => {
+                                del([col])
+                            }} onEdit={() => {
                                 edit(col)
-                            }} permission={["edit","del"]}/>
+                            }} permission={["edit", "del"]}/>
                         </>)}/>
                     </Table>
                 </Col>
                 <Col span={6}>
-                    {/*<Tree></Tree>*/}
+                    <div style={{padding: "20px 0"}}>
+                        <Card title={"访问权限"} size={"small"}>
+                            <Tree
+                                checkable
+                                defaultSelectedKeys={[]}
+                                defaultCheckedKeys={[]}
+                                onSelect={onSelect}
+                                treeData={menuData}
+                            />
+                        </Card>
+
+                    </div>
                 </Col>
             </Row>
         </>

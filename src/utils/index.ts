@@ -1,12 +1,12 @@
 export interface Menus{
     icon: string;
-    keep_alive: boolean;
+    keep_alive: boolean|number;
     key: string;
     menu_id: number,
     parentKey: string;
     path: string;
     title: string;
-    visible:boolean;
+    visible:boolean|number;
     weight:number;
     children?:Array<Menus>;
     parent?:Menus,

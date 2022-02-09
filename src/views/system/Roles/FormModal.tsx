@@ -1,5 +1,5 @@
 import React, {FC, ForwardedRef, forwardRef, useEffect} from "react"
-import {Form, Input, Modal,Select, Tag} from "antd";
+import {Form, Input, Modal} from "antd";
 
 interface IProps {
     visible: boolean;
@@ -12,6 +12,13 @@ interface IProps {
 }
 
 const FormModal:FC<IProps> = ({refInstance,visible,title,submit, onCancel, form, type})=>{
+    const cancel = () => {
+        onCancel()
+    }
+    const handleSubmit = ()=>{
+        submit()
+    }
+
     useEffect(()=>{
         if (form && type !== "" && refInstance) {
             switch (type){
@@ -21,19 +28,16 @@ const FormModal:FC<IProps> = ({refInstance,visible,title,submit, onCancel, form,
                 case "add":
                     (refInstance as any).current.setFieldsValue({parent_key:form.parent_key,keep_alive:0,visible:0, weight:0,});
                     break;
-                default:
-
-                    break;
             }
         }
-    },[type])
+    },[type,refInstance,form])
     useEffect(() => {
         if (!visible && refInstance && (refInstance as any).current) {
             (refInstance as any).current.resetFields();
         }
-    }, [visible])
+    }, [visible,refInstance])
     return (
-        <Modal width={"550px"} title={title} visible={ visible } onOk={ submit } onCancel={ onCancel }>
+        <Modal width={"550px"} title={title} visible={ visible } onOk={ handleSubmit } onCancel={ cancel }>
             <Form
                 ref={ refInstance }
                 labelCol={{span: 5}}

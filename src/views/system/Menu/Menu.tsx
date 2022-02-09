@@ -29,17 +29,7 @@ function Menu() {
     const [loading, setLoading] = useState<boolean>(false)
     const [data, setData] = useState<Menuer[]>([])
     const [isModalVisible, setModalVisible] = useState<boolean>(false)
-    const [currentForm, setCurrentForm] = useState<any>({
-        keep_alive:0,
-        visible:0,
-        weight:0,
-        icon: "",
-        key: "",
-        parent_key: "",
-        parent_name: "",
-        path: "",
-        title: "",
-    })
+    const [currentForm, setCurrentForm] = useState<any>(defaultForm)
     const [refresh, setRefresh] = useState<number>(0)
     const [submitType, setType] = useState<operate>('')
     const [selectedRowKeys,setSelectedRowKeys] = useState<any>([])

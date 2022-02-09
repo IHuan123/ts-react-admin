@@ -11,7 +11,9 @@ import {
     SET_SELECT_MENU_TYPE,
     ADD_OPEN_MENUS_TAG_TYPE,
     DEL_CLOSE_MENUS_TAG_TYPE,
-    SET_BREADCRUMB_TYPE
+    SET_BREADCRUMB_TYPE,
+    CLEAR_MENU_TAG_TYPE,
+    CLEAR_MENU_TAG
 } from "../constants";
 
 export interface SET_MENUSAction {
@@ -38,9 +40,9 @@ export interface SelectMenu {
 }
 export interface SET_SELECT_MENUAction {
     type:SET_SELECT_MENU_TYPE,
-    selectMenu:SelectMenu
+    selectMenu:SelectMenu|null
 }
-export function setSelectMenu(selectMenu:SelectMenu):SET_SELECT_MENUAction{
+export function setSelectMenu(selectMenu:SelectMenu|null):SET_SELECT_MENUAction{
     return { type:SET_SELECT_MENU,selectMenu }
 }
 
@@ -60,6 +62,15 @@ export interface CLOSE_MENUAction {
 export function delCloseMenuTag(closeMenu:string):CLOSE_MENUAction{
     return { type:DEL_CLOSE_MENUS_TAG,closeMenu }
 }
+
+export interface CLEAR_MENUAction {
+    type:CLEAR_MENU_TAG_TYPE
+}
+export function clearMenuTag():CLEAR_MENUAction{
+    return { type:CLEAR_MENU_TAG }
+}
+
+
 
 export interface Breadcrumb {
     icon:string;
