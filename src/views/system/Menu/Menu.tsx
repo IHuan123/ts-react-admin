@@ -66,6 +66,7 @@ function Menu() {
             }
         })
     }
+    //批量删除
     const batchDelMenu = ()=> {
         let ids:number[] = selectedRowKeys;
         ids = Array.from(new Set(ids))

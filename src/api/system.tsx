@@ -12,11 +12,11 @@ export function getRoles(){
         method:"get"
     })
 }
-export function roleGetMenus(params:{ rid:string }){
+export function roleGetMenus(id:number){
     return request({
         url:"/api/system/getRolesMenus",
         method:"GET",
-        params
+        params:{id}
     })
 }
 
@@ -39,5 +39,21 @@ export function delRoles(ids:number[]){
         url:"/api/system/deleteRoles",
         method:"DELETE",
         data:{ids}
+    })
+}
+//更新roles_menus
+export function updateRolesMenus(params:{mIds:number[],rid:number|null}){
+    return request({
+        url:"/api/system/updateRolesMenus",
+        method:"PUT",
+        data:params
+    })
+}
+//添加
+export function addRoles(params:{name:string;dataScope:string}){
+    return request({
+        url:"/api/system/addRoles",
+        method:"POST",
+        data:params
     })
 }
