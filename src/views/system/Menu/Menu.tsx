@@ -7,7 +7,7 @@ import {getAllMenu, updateMenu, deleteMenu, addMenu} from "@/api/menus";
 import Action,{operate} from "@/components/Action/Action"
 import {reduceMenuList, Menus} from "@/utils"
 import FormModal from "@/views/system/Menu/FormModal";
-import CrudOperate from "@/views/system/Menu/CrudOperate";
+import CrudOperate from "@/components/CrudOperate/CrudOperate";
 const {Column} = Table;
 type Menuer = Menus
 

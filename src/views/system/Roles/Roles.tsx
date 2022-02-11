@@ -4,7 +4,7 @@ import {getRoles, updateRoles, delRoles, UpdateParams,roleGetMenus, updateRolesM
 import FormModal from "@/views/system/Roles/FormModal";
 import Action,{operate} from "@/components/Action/Action"
 import {getAllMenu, Menuer} from "@/api/menus";
-import CrudOperate from "@/views/system/Menu/CrudOperate";
+import CrudOperate from "@/components/CrudOperate/CrudOperate";
 import "./index.scss"
 const {Column} = Table
 
@@ -155,12 +155,12 @@ function Roles() {
     }
     useEffect(() => {
         let ignore = false;
-        getRoles().then(res => {
-            if(!ignore){
-                setLoading(false)
-                setData(res.data)
-            }
-        }).catch(e => setLoading(false))
+        // getRoles().then(res => {
+        //     if(!ignore){
+        //         setLoading(false)
+        //         setData(res.data)
+        //     }
+        // }).catch(e => setLoading(false))
         getAllMenu().then((res:any)=>{
             if(!ignore){
                 setLoading(false)

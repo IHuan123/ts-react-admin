@@ -12,7 +12,7 @@ const CrudOperate:FC<CProps> = ({ onAdd,onDel })=>{
             <Popconfirm
                 onConfirm={ onDel }
                 okText="确认"
-                title="删除选中菜单会一同删除其下所有子菜单，确认删除？"
+                title="删除所有选中项，确认删除？"
                 cancelText="取消"
             >
                 <Button  danger  icon={<DeleteOutlined />} >删除</Button>
