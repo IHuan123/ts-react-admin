@@ -25,9 +25,19 @@ class Login extends Component<any,any> {
 
 
     componentDidMount() {
-        let remember = window.localStorage.getItem("remember") === "1"
+        let remember = false
+        try {
+            remember = window.localStorage.getItem("remember") === "1"
+        }catch (e) {
+            remember = false
+        }
         if(remember){
-            let initValue:string = window.localStorage.getItem("INIT_LOGIN_VALUE")||'{}';
+            let initValue:string
+            try {
+                initValue = window.localStorage.getItem("INIT_LOGIN_VALUE")||'{}';
+            }catch (e) {
+                initValue = ""
+            }
             if(initValue && initValue!=="{}"){
                 this.formEl.current.setFieldsValue(JSON.parse(initValue))
             }
@@ -45,8 +55,18 @@ class Login extends Component<any,any> {
         username:string;
         password:string;
     }) => {
-        window.localStorage.removeItem("INIT_LOGIN_VALUE")
-        if(this.state.remember) window.localStorage.setItem("INIT_LOGIN_VALUE",JSON.stringify({username: e.username,password: e.password }));
+        try {
+            window.localStorage.removeItem("INIT_LOGIN_VALUE")
+        }catch (e){
+            console.log(e)
+        }
+        if(this.state.remember) {
+            try{
+                window.localStorage.setItem("INIT_LOGIN_VALUE",JSON.stringify({username: e.username,password: e.password }))
+            }catch (e){
+                console.log(e)
+            }
+        };
         this.props.handleLogin(e,this.props.history) //登录
         this.refreshCode()
     }
@@ -55,22 +75,28 @@ class Login extends Component<any,any> {
     }
     refreshCode=()=>{
         this.setState({
-            refreshCodeImage:true
+            refreshCodeImage:true,
+            codeImg:""
         })
         setTimeout(()=>{
             this.setState({
-                refreshCodeImage:false
+                refreshCodeImage:false,
+                codeImg:"http://localhost:9000/captcha/code?time=" + new Date().valueOf()
             })
         },0)
     }
     onChange=(e:any)=>{
-        window.localStorage.setItem("remember",e.target.checked ? "1":"0");
-        if(!e.target.checked){
-            window.localStorage.removeItem("INIT_LOGIN_VALUE")
+        try {
+            window.localStorage.setItem("remember",e.target.checked ? "1":"0");
+            if(!e.target.checked){
+                window.localStorage.removeItem("INIT_LOGIN_VALUE")
+            }
+            this.setState({
+                remember:e.target.checked
+            })
+        }catch (e){
+            console.log(e)
         }
-        this.setState({
-            remember:e.target.checked
-        })
     }
     render() {
         const iconStyle = { color: "#999999" }
@@ -128,18 +154,19 @@ class Login extends Component<any,any> {
                                         size="large"
                                         placeholder="请输入验证码"
                                         maxLength={4}
+                                        style={{width:"280px"}}
                                         prefix={<SafetyCertificateOutlined style={iconStyle} />}
                                     />
 
                                     {
-                                        !refreshCodeImage && <img
-                                            className="login-code"
-                                            width={200}
-                                            height={40}
-                                            src={codeImg}
-                                            alt=""
-                                            onClick={this.refreshCode}
-                                        />
+                                        !refreshCodeImage && <div className="login-code-box">
+                                            <img
+                                                className="login-code"
+                                                src={codeImg}
+                                                alt=""
+                                                onClick={this.refreshCode}
+                                            />
+                                        </div>
                                     }
                                 </div>
                             </Form.Item>

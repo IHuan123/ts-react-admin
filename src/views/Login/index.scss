@@ -133,7 +133,7 @@ $p:30px;
         border-radius: 32% 68% 43% 57% / 43% 38% 62% 57%  ;
       }
       75%{
-        border-radius: 40% 78% 36% 64% / 51% 34% 66% 49%  ;
+        border-radius: 40% 78% 40% 64% / 51% 34% 66% 49%  ;
       }
       90%{
         border-radius: 32% 68% 46% 54% / 57% 41% 59% 43%  ;
@@ -153,7 +153,7 @@ $p:30px;
         border-radius: 59% 41% 68% 32% / 43% 51% 49% 77%  ;
       }
       50%{
-        border-radius: 43% 57% 53% 47% / 35% 46% 54% 65%  ;
+        border-radius: 43% 57% 53% 47% / 50% 46% 54% 65%  ;
       }
       65%{
         border-radius: 32% 68% 43% 57% / 43% 38% 62% 57%  ;
@@ -162,7 +162,7 @@ $p:30px;
         border-radius: 40% 78% 36% 64% / 51% 34% 66% 49%  ;
       }
       90%{
-        border-radius: 32% 68% 46% 54% / 57% 41% 59% 43%  ;
+        border-radius: 32% 68% 46% 54% / 57% 50% 59% 43%  ;
       }
       100%{
         border-radius: 48% 52% 70% 30% / 31% 31% 69% 69% ;
@@ -174,10 +174,10 @@ $p:30px;
         border-radius: 48% 52% 70% 30% / 31% 31% 69% 69% ;
       }
       10%{
-        border-radius: 58% 42% 78% 22% / 60% 45% 55% 81%  ;
+        border-radius: 58% 42% 78% 50% / 60% 45% 55% 81%  ;
       }
       25%{
-        border-radius: 60% 29% 50% 20% / 30% 61% 39% 88%  ;
+        border-radius: 60% 29% 50% 50% / 30% 61% 39% 88%  ;
       }
       35%{
         border-radius: 59% 41% 68% 32% / 43% 51% 49% 77%  ;
@@ -195,7 +195,7 @@ $p:30px;
         border-radius: 32% 68% 46% 54% / 57% 41% 59% 43%  ;
       }
       100%{
-        border-radius: 48% 52% 70% 30% / 31% 31% 69% 69% ;
+        border-radius: 48% 52% 70% 50% / 50% 31% 69% 69% ;
         transform: rotateZ(-360deg);
       }
     }
@@ -230,11 +230,20 @@ $p:30px;
         width:360px;
         margin-right: 10px;
       }
-      .login-code{
-        object-fit: contain;
+      .login-code-box{
         border-radius: 5px;
-        opacity: 0.7;
+        overflow: hidden;
+        width: 200px;
+        height: 40px;
+        .login-code{
+          object-fit: cover;
+          opacity: 0.7;
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
       }
+
     }
     .remember-password{
       margin-bottom: 10px;
